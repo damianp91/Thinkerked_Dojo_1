@@ -1,0 +1,108 @@
+/*
+----------------------------------------CONSIGNA DOJO 1--------------------------------------               
+	El gobierno de la cuidad quiere actualizar los semáforos que tiene instalados. 
+    La empresa ScaraRobotics” gano la licitación y ahora les toca a los desarrolladores 
+    de la empresa generar un proyecto low cost que cumpla con las especificaciones que 
+    el gobierno de la cuidad nos impone, a saber las especificaciones son las siguientes:
+    
+    1- El semáforo tiene que tener 2 leds de cada color como minimo, en caso de que uno se
+       rompa, lo ideal serian 3.
+    2- Tiene que implementar los tiempos correctos como se detallan a continuación.
+    3- El verde dura 45 segundos.
+    4- El amarillo dura 5 segundos.
+    5- Rojo dura 30 segundos.
+    6- Tiene que tener señalización para personas no videntes como se detalla a
+       continuación.
+    7- Durante el verde: No sonar
+    8- Durante el amarillo: Tiene que sonar 1 vez cada 2 segundos en un tono suave.
+    9- Durante el rojo: Tiene que sonar 1 vez por segundo en un tono fuerte.
+    
+--------------------------------------------------------------------------------------------- 
+*/
+
+#define RED 13
+#define YELLOW 12
+#define GREEN 11
+#define SOUND 9
+ 
+// Prototipos de funciones.
+int inLight(int entrance, long tim); // Se decide usar un valor de tipo long ya que int se desborda a partir de 32767
+int soundLight(int timeSound, int pipMil); 
+
+void setup()
+{
+  pinMode(RED, OUTPUT);
+  pinMode(YELLOW, OUTPUT);
+  pinMode(GREEN, OUTPUT);
+  pinMode(SOUND, OUTPUT);
+  Serial.begin(9600);
+
+}
+
+void loop(){
+  
+  inLight(RED, 30000);
+  inLight(YELLOW, 5000);
+  inLight(GREEN, 45000);
+  
+}
+
+
+// inLight se encarga de enceder un LED segun el tiempo deseado, como parametros recibe:
+// entrance de tipo int indica el numero de pin a usar
+// tim de tipo long indica el tiempo en milisegundos que se tardara en ejectar el encendido
+int inLight(int entrance, long tim){
+   
+  if(entrance >= 11){
+    
+    digitalWrite(entrance, HIGH);
+    
+    if(entrance == RED || entrance == YELLOW){
+      
+      if(entrance == RED){
+        
+        soundLight(tim, 250);
+        
+      }
+      
+      else{
+        
+        soundLight(tim, 500);
+        
+      }
+      
+      delay(125); // Tiempo de encendido de luz en milisegundos
+      digitalWrite(entrance, LOW);
+      delay(125); // Tiempo de apagado de luz en milisegundos
+    
+    }
+    
+    else{
+      
+      delay(tim); // Tiempo de encendido de luz en milisegundos
+      digitalWrite(entrance, LOW);
+      delay(125); // Tiempo de apagado de luz en milisegundos
+      
+    }
+    
+  }
+  
+}
+
+// soundLigght se encarga de encender el PIENZO duranel el tiempo e intensidad
+// establecidas, esta funcion recibe como parametros de entrada:
+// timeSound de tipo int indica el tiempo en milisegundos que tarde en ejecutarce el sonido
+// pipMil de tipo int indica las veces que sonara por milisengundos
+int soundLight(int timeSound, int pipMil){
+  unsigned long auxTime = millis(); // Se toma el tiempo real de ejecucion del programa (necesario que sea de tipounsigned long para no debordar el )
+  
+  while(millis() - auxTime < timeSound){
+    
+    tone(SOUND,30,1000);
+    delay(pipMil);
+    noTone(SOUND);
+    delay(pipMil);
+    
+  }
+  
+}
